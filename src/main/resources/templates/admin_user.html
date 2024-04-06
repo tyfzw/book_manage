@@ -1,0 +1,469 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户管理</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/dist/css/AdminLTE.min.css">
+    <link rel="shortcut icon" href="/static/favicon.ico"/>
+    <link rel="stylesheet" href="/static/bower_components/jquery-easyui/themes/metro/easyui.css">
+    <link rel="stylesheet" href="/static/bower_components/jquery-easyui/themes/icon.css">
+    <link rel="stylesheet" href="/static/bower_components/jquery-easyui/themes/color.css">
+
+    <style>
+        .datagrid-header-row, .datagrid-row {
+            height: 45px;
+        }
+
+        body {
+            font-family: verdana, helvetica, arial, sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+
+<div th:include="../static/common/headbar::headbar"></div>
+<div th:include="./detail_admin::homepage"></div>
+<!-- Main content -->
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info" style="margin-bottom: 2px">
+
+
+                <div class="easyui-accordion" style="width:100%">
+                    <div title="按条件查询:" data-options="iconCls:'icon-search'" style="overflow:auto;padding:10px">
+                        用户名:&nbsp;<input type="text" id="s_userName" size="20"
+                                         onkeydown="if(event.keyCode==13) searchUser()"/>
+                        邮箱:&nbsp;<input type="text" id="s_userEmail" size="20"
+                                        onkeydown="if(event.keyCode==13) searchUser()"/>
+                        <a href="javascript:searchUser()" class="easyui-linkbutton" iconCls="icon-search"
+                           plain="true">搜索</a>
+                        <a href="javascript:resetSearchValue()" class="easyui-linkbutton" iconCls="icon-undo"
+                           plain="true">重置</a>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <table id="dg" title="用户列表" iconCls="icon-man" class="easyui-datagrid" width="100%"
+                   url="/user/list"
+                   toolbar="#tb" pagination="true"
+                   rownumbers="true" fitColumns="false" singleSelect="false">
+                <thead>
+                <th field="ck" checkbox="true"></th>
+                <th field="userId" width="200" align="center">编号</th>
+                <th field="nickname" width="200" align="center">用户名</th>
+                <th field="email" width="200" align="center">邮箱</th>
+                <th field="status" width="100" align="center" formatter="formatUserState">状态</th>
+                <th field="createTime" width="200" align="center">创建时间</th>
+                <th field="updateTime" width="200" align="center">更新时间</th>
+                <th field="identity" width="200" align="center">身份</th>
+                <th field="aa" width="300" align="center" formatter="formatOperate">操作</th>
+                </thead>
+            </table>
+
+            <div id="tb">
+                <div>
+                    <a href="javascript:openUserAddDialog()" class="easyui-linkbutton" iconCls="icon-add"
+                       plain="true">添加</a>
+                    <a href="javascript:openUserModifyDialog()" class="easyui-linkbutton" iconCls="icon-edit"
+                       plain="true">修改</a>
+                    <a href="javascript:deleteUser()" class="easyui-linkbutton" iconCls="icon-remove"
+                       plain="true">删除</a>
+                </div>
+            </div>
+
+            <div id="dlg" class="easyui-dialog" style="width:400px"
+                 data-options="closed:true,modal:true,border:'thin',buttons:'#dlg-buttons'">
+                <form id="fm" novalidate style="margin:0;padding:20px 50px">
+                    <div style="margin-bottom:10px">
+                        <input name="userName" id="n_userName" class="easyui-textbox" required="true"
+                               validType="userName" label="用户名:"
+                               style="width:100%">
+                    </div>
+                    <div style="margin-bottom:10px">
+                        <input type="password" id="n_userPassword" name="userPassword" class="easyui-textbox"
+                               required="true" validType="length[6,15]" label="密码:"
+                               style="width:100%">
+                    </div>
+                    <div style="margin-bottom:10px">
+                        <input type="password" name="reUserPassword" class="easyui-textbox" required="true"
+                               validType="equalTo['#n_userPassword']" invalidMessage="两次输入密码不匹配" label="确认密码:"
+                               style="width:100%">
+                    </div>
+
+                    <div style="margin-bottom:10px">
+                        <input name="userEmail" id="n_userEmail" class="easyui-textbox" required="true"
+                               validType="email" label="邮箱:"
+                               style="width:100%">
+                    </div>
+
+                </form>
+            </div>
+            <div id="dlg-buttons">
+                <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveUser()"
+                   style="width:90px">保存</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"
+                   onclick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
+            </div>
+
+            <div id="dlg1" class="easyui-dialog" style="width:400px"
+                 data-options="closed:true,modal:true,border:'thin',buttons:'#dlg1-buttons'">
+                <form id="fm1" novalidate style="margin:0;padding:20px 50px">
+                    <div style="margin-bottom:10px">
+                        <input name="nickname" id="u_userName" class="easyui-textbox" required="true"
+                               validType="userName" label="用户名:"
+                               style="width:100%">
+                    </div>
+
+                    <div style="margin-bottom:10px">
+                        <input name="email" id="u_userEmail" class="easyui-textbox" required="true"
+                               validType="email" label="邮箱:"
+                               style="width:100%">
+                    </div>
+
+                </form>
+            </div>
+            <div id="dlg1-buttons">
+                <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="updateUser()"
+                   style="width:90px">保存</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"
+                   onclick="javascript:$('#dlg1').dialog('close')" style="width:90px">取消</a>
+            </div>
+
+            <div id="dlg2" class="easyui-dialog" style="width:400px" iconCls="icon-man"
+                 data-options="closed:true,modal:true,border:'thin',buttons:'#dlg2-buttons'">
+                <!--隐藏域用户Id-->
+                <input type="hidden" id="userId" name="userId"/>
+                <table id="dg2" class="easyui-datagrid" pagination="true"
+                       rownumbers="true" fitColumns="true" width="100%">
+                    <thead>
+                    <th field="ck" checkbox="true" align="center"></th>
+                    <th field="roleName" width="70" align="center">角色名</th>
+                    </thead>
+                </table>
+
+            </div>
+            <div id="dlg2-buttons">
+                <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveRoleSet()"
+                   style="width:90px">保存</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"
+                   onclick="javascript:$('#dlg2').dialog('close')" style="width:90px">取消</a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /.content -->
+
+<!-- jQuery 3 -->
+<script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/dist/js/adminlte.min.js"></script>
+<!-- layer -->
+<script src="/static/bower_components/layer-v3.1.1/layer/layer.js"></script>
+<!-- jquery easyui -->
+<script src="/static/bower_components/jquery-easyui/jquery.easyui.min.js"></script>
+<script src="/static/bower_components/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+<script src="/static/js/loading.js"></script>
+
+<script>
+    if ($.fn.datagrid) {
+        $.fn.datagrid.defaults.pageSize = 5;//这里一定要用datagrid.defaults.pageSize
+        $.fn.datagrid.defaults.pageList = [5];//这里一定要有，不然上面的也不起效
+    }
+
+    $.extend($.fn.validatebox.defaults.rules, {
+        /*必须和某个字段相等*/
+        equalTo: {
+            validator: function (value, param) {
+                return $(param[0]).val() == value;
+            }, message: '字段不匹配'
+        },
+        userName: {// 验证用户名
+            validator: function (value) {
+                return /^[\u4e00-\u9fa5a-zA-Z0-9]{2,12}$/i.test(value);
+            },
+            message: '用户名不合法(允许2-12位)'
+
+        },
+    });
+
+
+    function formatUserState(value, row) {
+        if (row.status == 'ACTIVE') {
+            return "<button class='btn-success' disabled>正常</button>";
+        } else if (row.status == 'FREEZE') {
+            return "<button  class='btn-warning' disabled>冻结</button>";
+        } else {
+            return "<button  class='btn-warning' disabled>封禁</button>";
+        }
+    }
+
+    function formatOperate(value, row) {
+        return "<button onclick=\"enableUser('" + row.userId + "')\" class='btn-success'>启用</button> <button onclick=\"disableUser('" + row.userId + "')\" class='btn-warning'>禁用</button>  ";
+    }
+
+    function enableUser(userId) {
+        console.log(userId);
+        $.messager.confirm("系统提示", "您确定要启用该用户吗?", function (r) {
+            if (r) {
+                $.ajax({
+                    type: "POST",
+                    url: "/user/enable",
+                    data: {
+                        userId: userId
+                    },
+                    // headers: {"token": $.cookie("token")},
+                    success: function (res) {
+                        if (res.success) {
+                            $.messager.alert("系统提示", "启用成功！");
+                            $("#dg").datagrid("reload");
+                        } else {
+                            $.messager.alert("系统提示", res.msg);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function disableUser(userId) {
+        $.messager.confirm("系统提示", "您确定要停用该用户吗?", function (r) {
+            if (r) {
+                $.ajax({
+                    type: "POST",
+                    url: "/user/disable",
+                    data: {
+                        userId: userId
+                    },
+                    // headers: {"token": $.cookie("token")},
+                    success: function (res) {
+                        if (res.success) {
+                            $.messager.alert("系统提示", "停用成功！");
+                            $("#dg").datagrid("reload");
+                        } else {
+                            $.messager.alert("系统提示", res.msg);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function showLoadLayer() {
+        layer.msg('拼命加载中...', {icon: 16, shade: [0.5, '#f5f5f5'], scrollbar: false, offset: '5px'});
+    }
+
+    function closeLoadLayer(index) {
+        layer.close(index);
+    }
+
+    function resetUserPassword(userId, userEmail) {
+        var index = null;
+        $.messager.confirm("系统提示", "您确定重置密码吗?", function (r) {
+            if (r) {
+                $.ajax({
+                    type: "POST",
+                    url: "/user/sendMail",
+                    data: {
+                        userId: userId,
+                        toMail: userEmail
+                    },
+                    // headers: {"token": $.cookie("token")},
+                    beforeSend: function () {
+                        index = showLoadLayer()
+                    },
+                    success: function (res) {
+                        closeLoadLayer(index);
+                        if (res.success) {
+                            $.messager.alert("系统提示", "重置成功！");
+                            $("#dg").datagrid("reload");
+                        } else {
+                            $.messager.alert("系统提示", res.msg);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+    function searchUser() {
+        $("#dg").datagrid("load", {
+            "userName": $("#s_userName").val(),
+            "userTrueName": $("#s_userTrueName").val(),
+            "userEmail": $("#s_userEmail").val(),
+            "userPhone": $("#s_userPhone").val()
+        })
+    }
+
+    function resetSearchValue() {
+        $("#s_userName").val("");
+        $("#s_userTrueName").val("");
+        $("#s_userEmail").val("");
+        $("#s_userPhone").val("");
+        searchUser();
+    }
+
+    var url;
+
+    function openUserAddDialog() {
+        $("#dlg").dialog("open").dialog("center").dialog("setTitle", "新增用户信息");
+        $("#fm").form("clear");
+        url = "/user/save";
+    }
+
+    function saveUser() {
+        $.ajax({
+            type: "POST",
+            url: url,
+            dateType: "json",
+            // headers: {"token": $.cookie("token")},
+            beforeSend: function () {
+                var isValid = $("#fm").form("validate");
+                return isValid; // 返回false终止表单提交
+            },
+            data: {
+                nickname: $("#n_userName").val(),
+                password: $("#n_userPassword").val(),
+                email: $("#n_userEmail").val(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    $.messager.alert("系统提示", "新增成功！");
+                    $("#dlg").dialog("close");
+                    $("#dg").datagrid("reload");
+                } else {
+                    $.messager.alert("系统提示", res.msg);
+                }
+            }
+        });
+
+    }
+
+    function openUserModifyDialog() {
+        var selectedRows = $("#dg").datagrid("getSelections");
+        if (selectedRows.length != 1) {
+            $.messager.alert("系统提示", "请选择一条要修改的数据！");
+            return;
+        }
+        var row = selectedRows[0];
+        $("#dlg1").dialog("open").dialog("center").dialog("setTitle", "修改用户信息");
+        $("#fm1").form("load", row);
+        url = "/user/update?userId=" + row.userId;
+    }
+
+    function updateUser() {
+        $.ajax({
+            type: "PUT",
+            url: url,
+            dateType: "json",
+            // headers: {"token": $.cookie("token")},
+            beforeSend: function () {
+                var isValid = $("#fm1").form("validate");
+                return isValid; // 返回false终止表单提交
+            },
+            data: {
+                nickname: $("#u_userName").val(),
+                email: $("#u_userEmail").val(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    $.messager.alert("系统提示", "修改成功！");
+                    $("#dlg1").dialog("close");
+                    $("#dg").datagrid("reload");
+                } else {
+                    $.messager.alert("系统提示", res.msg);
+                }
+            }
+        });
+    }
+
+    function deleteUser() {
+        var selectedRows = $("#dg").datagrid("getSelections");
+        if (selectedRows.length != 1) {
+            $.messager.alert("系统提示", "请选择一条要删除的数据！");
+            return;
+        }
+        var userId = selectedRows[0].userId;
+        $.messager.confirm("系统提示", "您确定要删除这条数据吗?", function (r) {
+            if (r) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "/user/delete?userId=" + userId,
+                    // headers: {"token": $.cookie("token")},
+                    success: function (res) {
+                        if (res.success) {
+                            $.messager.alert("系统提示", "删除成功！");
+                            $("#dg").datagrid("reload");
+                        } else {
+                            $.messager.alert("系统提示", "删除失败！");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        $("#dg").datagrid({
+            onDblClickRow: function (index, row) {
+                $("#dlg1").dialog("open").dialog("center").dialog("setTitle", "修改用户信息");
+                $("#fm1").form("load", row);
+                url = "/user/update?userId=" + row.userId;
+            }
+        });
+
+    });
+
+    function openRoleChooseDialog(roles, userId) {
+        $("#dlg2").dialog("open").dialog("center").dialog("setTitle", "选择角色");
+        var rolesArr = roles.split(",");
+        $("#dg2").datagrid({
+            url: "/role/list",
+            onLoadSuccess: function () {
+                var allRows = $("#dg2").datagrid("getRows");
+                for (var i = 0; i < allRows.length; i++) {
+                    var roleName = allRows[i].roleName;
+                    if ($.inArray(roleName, rolesArr) >= 0) {
+                        $("#dg2").datagrid("checkRow", i);
+                    }
+                }
+            }
+        });
+        $("#userId").val(userId);
+    }
+
+    function saveRoleSet() {
+        //TODO
+        var userId = $("#userId").val();
+        var selectedRows = $("#dg2").datagrid("getSelections");
+        var strRoleIds = [];
+        for (var i = 0; i < selectedRows.length; i++) {
+            strRoleIds.push(selectedRows[i].roleId);
+        }
+        // console.log(strRoleIds);
+        var roleIds = strRoleIds.join(",");
+        // console.log(roleIds);
+        $.post("/user/saveRoleSet", {roleIds: roleIds, userId: userId}, function (res) {
+            if (res.ret) {
+                $.messager.alert("系统提示", "设置成功！");
+                $("#dlg2").dialog("close");
+                $("#dg").datagrid("reload");
+            } else {
+                $.messager.alert("系统提示", "设置失败，请联系管理员");
+            }
+        }, "json");
+
+    }
+</script>
+</body>
+</html>

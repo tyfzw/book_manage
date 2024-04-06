@@ -1,0 +1,10 @@
+@startuml
+[*] --> NORMAL
+NO_BORROW -> DELETE
+NORMAL -> DELETE
+[*] --> NO_BORROW
+NORMAL:正常
+NO_BORROW:不外借
+DELETE:已删除
+DELETE --> [*]
+@enduml

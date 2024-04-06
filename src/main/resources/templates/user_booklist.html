@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>预约图书</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/css/homepage.css">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div th:include="../static/common/headbar::headbar"></div>
+<div th:include="./detail_user::homepage"></div>
+<div style="padding: 20px 550px 10px">
+    <form method="post" action="/managebooks/search" class="form-inline" id="searchform">
+        <div class="input-group">
+            <input type="text" placeholder="输入图书名" class="form-control" name="name">
+            <span class="input-group-btn">
+                <input type="submit" value="搜索" class="btn btn-default">
+            </span>
+        </div>
+    </form>
+</div>
+
+<div class="panel panel-default" style="width: 90%;margin-left: 5%">
+    <div class="panel-heading">
+        <h3 class="panel-title" style="text-align:center">热门图书</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-hover" style="text-align:center">
+            <thead>
+            <tr>
+                <th>书本编号</th>
+                <th>书名</th>
+                <th>出版社</th>
+                <th>作者</th>
+                <th>出版时间</th>
+                <th>预约</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="booklist: ${list.data}">
+                <td th:text="${booklist.bookId}" id="bookId"></td>
+                <td th:text="${booklist.name}" id="name"></td>
+                <td th:text="${booklist.publisher}" id="publisher"></td>
+                <td th:text="${booklist.writer}" id="writer"></td>
+                <td th:text="(${booklist.publishTime})+'年'" id="publishTime"></td>
+                <td th:if="${booklist.status} eq 'NORMAL'">
+                    <button type="button" class="btn btn-info"
+                            onclick="order(this)">预约
+                    </button>
+                </td>
+                <td th:if="${booklist.status} eq 'NO_BORROW'">
+                    <button type="button" class="btn btn-warn disabled" >此书不外借</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="text-align:center;">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+
+            <li><a href="/managebooks/booklist?currentPage=1">首页</a></li>
+            <li>
+                <a th:href="'/managebooks/booklist?currentPage='+${list.currentPage} + ' -'">上一页</a>
+            </li>
+            <li>
+                <a th:href="'/managebooks/booklist?currentPage='+${list.currentPage}+ ' '+${list.pageCount} + ' a' ">下一页</a>
+            </li>
+            <li>
+                <a th:href="'/managebooks/booklist?currentPage='+${list.pageCount}">末页</a>
+            </li>
+            <span style="font-size: 25px;margin-left: 5px" th:text="'共'+${list.count}+'条,'"></span>
+            <span style="font-size: 25px;margin-left: 5px" th:text="'共'+${list.pageCount}+'页/'"></span>
+            <span style="font-size: 25px;margin-left: 5px" th:text="'当前为第'+${list.currentPage}+'页'"></span>
+        </ul>
+    </nav>
+</div>
+
+</body>
+</html>
+
+
+<script>
+    function order(obj) {
+        var $td = $(obj).parents('tr').children('td')
+        var bookId = $td.eq(0).text();
+        console.log(bookId);
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: 'http://localhost:8080/managebooks/order',
+            contentType: "application/json",
+            data: JSON.stringify({
+                "bookId": bookId,
+            }),
+            success: function (result) {
+                console.log(result)
+                if (result.code === "000000" && result.data.success === true) {
+                    alert("预约成功")
+                    window.location.href = "http://localhost:8080/managebooks/booklist";
+                } else {
+                    alert(result.msg)
+                }
+            }
+        });
+    }
+
+
+</script>

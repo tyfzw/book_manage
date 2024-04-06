@@ -1,0 +1,61 @@
+@startuml
+participant web
+participant AdminManageBookController
+participant BorrowHandler
+participant BorrowService
+participant BookService
+
+web -> AdminManageBookController :request
+activate web
+activate AdminManageBookController
+AdminManageBookController -> AdminManageBookController :基本参数校验
+AdminManageBookController -> AdminManageBookController:包装领域模型
+
+AdminManageBookController -> BorrowHandler:同意预约申请
+activate BorrowHandler
+BorrowHandler -> BorrowService:根据borrowId进行查询
+activate BorrowService
+BorrowService -> BorrowHandler:返回borrowDO
+
+alt borrowDO
+else borrowDO is null
+BorrowHandler ->x BorrowHandler:抛出异常
+end
+
+alt status
+else status is ALREADY_RET
+BorrowHandler ->x BorrowHandler:抛出异常
+end
+
+BorrowHandler -> BorrowService :根据borrowId来CAS更新借阅状态改为已归还状态
+BorrowService -> BorrowHandler: 返回i
+
+alt i
+else i !=1
+BorrowHandler ->x BorrowHandler:抛出异常
+end
+
+BorrowHandler -> BookService:根据bookId查询bookDO
+activate BookService
+BookService -> BorrowHandler:返回bookDO
+
+alt bookDO
+else bookDO is null
+BorrowHandler ->x BorrowHandler:抛出异常
+end
+
+BorrowHandler -> BookService:根据bookId来CAS更新借阅标志为NO
+BookService -> BorrowHandler:返回i
+deactivate BookService
+
+alt i
+else i !=1
+BorrowHandler ->x BorrowHandler:抛出异常
+end
+
+BorrowHandler -> AdminManageBookController:返回true
+deactivate BorrowHandler
+AdminManageBookController -> web:返回true
+deactivate AdminManageBookController
+deactivate web
+@enduml

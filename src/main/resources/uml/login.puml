@@ -1,0 +1,35 @@
+@startuml
+participant web
+participant UserController
+participant loginHandler
+participant loginService
+
+web -> UserController :request
+activate web
+activate UserController
+UserController -> UserController :基本参数校验
+UserController -> UserController:包装领域模型
+
+
+UserController ->loginHandler :调用查询用户详情
+activate loginHandler
+loginHandler -> loginService :查询用户详情
+activate loginService
+loginService -> loginHandler :返回UserDO
+deactivate loginService
+alt UserDO
+else is null
+loginHandler ->x loginHandler :抛业务异常
+end
+
+alt 判断UserDO中的password
+else 不同
+loginHandler ->x loginHandler : 抛业务异常
+end
+
+
+
+loginHandler -> UserController: 返回UserVO
+UserController -> web: 返回UserVO
+
+@enduml

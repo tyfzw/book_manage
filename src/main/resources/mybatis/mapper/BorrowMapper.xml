@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tyfzw.booksmanage.infrastructure.gateway.database.dao.BorrowDAO">
+
+    <select id="selectOrderByUserId" resultType="com.tyfzw.booksmanage.infrastructure.gateway.database.model.BorrowDetailDO">
+        select borrow.id,
+               borrow_id,
+               user_id,
+               borrow.book_id,
+               name,
+               borrow.create_time,
+               borrow.update_time,
+               order_time,
+               borrow_start_time,
+               borrow_end_time,
+               borrow.status
+        from borrow,
+             book
+        where user_id = #{userId}
+          and borrow.book_id = book.book_id
+          and borrow.status in ('ACCEPT', 'ACCEPT_OUT_TIME','DELETE')
+
+    </select>
+    <select id="selectBorrowByUserId" resultType="com.tyfzw.booksmanage.infrastructure.gateway.database.model.BorrowDetailDO">
+        select borrow.id,
+               borrow_id,
+               user_id,
+               borrow.book_id,
+               name,
+               borrow.create_time,
+               borrow.update_time,
+               order_time,
+               borrow_start_time,
+               borrow_end_time,
+               ret_time,
+               borrow.status
+        from borrow,
+             book
+        where user_id = #{userId}
+          and borrow.book_id = book.book_id
+          and borrow.status in ('BORROW', 'BORROW_OUT_TIME', 'ALREADY_RET')
+
+    </select>
+    <select id="selectOrderDetail" resultType="com.tyfzw.booksmanage.infrastructure.gateway.database.model.BorrowDetailDO">
+        select borrow.id,
+               borrow_id,
+               user_id,
+               borrow.book_id,
+               name,
+               borrow.create_time,
+               borrow.update_time,
+               order_time,
+               borrow_start_time,
+               borrow_end_time,
+               ret_time,
+               borrow.status
+        from borrow,
+             book
+        where borrow.book_id = book.book_id
+          and borrow.status in ('ACCEPT', 'ACCEPT_OUT_TIME')
+    </select>
+    <select id="selectBorrow" resultType="com.tyfzw.booksmanage.infrastructure.gateway.database.model.BorrowDetailDO">
+        select borrow.id,
+               borrow_id,
+               user_id,
+               borrow.book_id,
+               name,
+               borrow.create_time,
+               borrow.update_time,
+               order_time,
+               borrow_start_time,
+               borrow_end_time,
+               ret_time,
+               borrow.status
+        from borrow,
+             book
+        where borrow.book_id = book.book_id
+          and borrow.status in ('BORROW', 'BORROW_OUT_TIME','ALREADY_RET')
+    </select>
+    <select id="selectBorrowLimit"
+            resultType="com.tyfzw.booksmanage.infrastructure.gateway.database.model.BorrowDO">
+        select  borrow_id,order_time,borrow_end_time,borrow_start_time,status
+        from borrow
+        where id > #{i}
+          and status in ('ACCEPT', 'BORROW') limit 20
+
+    </select>
+</mapper>

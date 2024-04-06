@@ -1,0 +1,55 @@
+@startuml
+participant web
+participant ManageController
+participant BookHandler
+participant BookService
+
+web -> ManageController :request
+activate web
+activate ManageController
+ManageController -> ManageController :基本参数校验
+ManageController -> ManageController:包装领域模型
+
+ManageController -> BookHandler : 预约
+activate BookHandler
+BookHandler -> BookService:根据bookId查询bookDO
+activate BookService
+BookService -> BookHandler:返回bookDO
+alt bookDO
+else bookDO is null
+BookHandler ->x BookHandler:抛出异常
+end
+
+alt status
+else status is DELETE
+BookHandler ->x BookHandler:抛出异常
+end
+
+alt status
+else status is NO_BORROW
+BookHandler ->x BookHandler:抛出异常
+end
+
+alt borrowFlag
+else borrowFlag is YES
+BookHandler ->x BookHandler:抛出异常
+end
+
+BookHandler -> BookService:根据bookId修改图书借阅标记为YES
+BookService -> BookHandler:返回修改条数i
+
+alt i
+else i != 1
+BookHandler ->x BookHandler:抛出异常
+end
+
+BookHandler -> BookService:插入预约记录
+
+deactivate BookService
+BookHandler -> ManageController:返回true
+deactivate BookHandler
+
+ManageController -> web:返回true
+deactivate ManageController
+deactivate web
+@enduml

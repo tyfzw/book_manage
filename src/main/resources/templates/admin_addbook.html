@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加图书</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/css/homepage.css">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div th:include="../static/common/headbar::headbar"></div>
+<div th:include="./detail_admin::homepage"></div>
+<div style="padding: 20px 1300px 10px">
+    <button class="btn btn-success"
+            data-toggle="modal" data-target="#add">添加图书
+    </button>
+<!--    <button class="btn btn-danger"-->
+<!--            data-toggle="modal" data-target="#delete">删除图书-->
+<!--    </button>-->
+</div>
+
+<!-- 添加图书窗口 -->
+<div id="add" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-title">
+                <h1 class="text-center">添加图书</h1>
+            </div>
+            <div class="modal-body">
+                <form id="form-login">
+
+                    <div class="form-group has-feedback">
+                        <label for="ad-isbn">isbn</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></span>
+                            <input id="ad-isbn" class="form-control" placeholder="请输入ISBN" maxlength="13" type="text">
+                        </div>
+                        <span style="color:red;display: none;" class="tips"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="ad-bname">书名</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-book"></span></span>
+                            <input id="ad-bname" class="form-control" placeholder="请输入书名" maxlength="20">
+                        </div>
+
+                        <span style="color:red;display: none;" class="tips"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="ad-publisher">出版社</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-info-sign"></span></span>
+                            <input id="ad-publisher" class="form-control" placeholder="请输入出版社" maxlength="10">
+                        </div>
+
+                        <span style="color:red;display: none;" class="tips"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="ad-writer">作者</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                            <input id="ad-writer" class="form-control" placeholder="请输入作者" maxlength="10">
+                        </div>
+
+                        <span style="color:red;display: none;" class="tips"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="ad-ptime">出版时间</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            <input id="ad-ptime" class="form-control" placeholder="请输入出版时间" maxlength="10">
+                        </div>
+
+                        <span style="color:red;display: none;" class="tips"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="ad-num">数量</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-plus"></span></span>
+                            <input id="ad-num" class="form-control" placeholder="请输入数量" maxlength="4">
+                        </div>
+
+                        <span style="color:red;display: none;" class="tips"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+                    </div>
+
+
+                    <div class="text-right">
+                        <button class="btn btn-primary" type="button" id="btn-add">添加</button>
+                        <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<div id="delete" class="modal fade">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-body">-->
+<!--                <button class="close" data-dismiss="modal">-->
+<!--                    <span>&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div class="modal-title">-->
+<!--                <h1 class="text-center">删除图书</h1>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form id="form-delete">-->
+<!--                    <div class="form-group has-feedback">-->
+<!--                        <label for="dl-isbn">isbn</label>-->
+<!--                        <div class="input-group">-->
+<!--                            <span class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></span>-->
+<!--                            <input id="dl-isbn" class="form-control" placeholder="请输入ISBN" maxlength="13" type="text">-->
+<!--                        </div>-->
+<!--                        <span style="color:red;display: none;" class="tips"></span>-->
+<!--                        <span style="display: none;" class="glyphicon glyphicon-remove form-control-feedback"></span>-->
+<!--                        <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>-->
+<!--                    </div>-->
+
+<!--                    <div class="text-right">-->
+<!--                        <button class="btn btn-primary" type="button" id="btn-delete">删除</button>-->
+<!--                        <button class="btn btn-danger" data-dismiss="modal">取消</button>-->
+<!--                    </div>-->
+
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="panel panel-default" style="width: 90%;margin-left: 5%">
+    <div class="panel-heading">
+        <h3 class="panel-title" style="text-align:center">图书信息</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-hover" style="text-align:center">
+            <thead>
+            <tr>
+                <th>书本编号</th>
+                <th>ISBN</th>
+                <th>书名</th>
+                <th>出版社</th>
+                <th>作者</th>
+                <th>出版时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="booklist: ${list.data}">
+                <td th:text="${booklist.bookId}" id="bookId"></td>
+                <td th:text="${booklist.isbn}"></td>
+                <td th:text="${booklist.name}"></td>
+                <td th:text="${booklist.publisher}"></td>
+                <td th:text="${booklist.writer}"></td>
+                <td th:text="${booklist.publishTime}"></td>
+                <td>
+                    <button type="button" class="btn btn-danger"
+                            onclick="deleteBook(this)">删除
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style="text-align:center;">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+
+            <li><a href="/admin/books?currentPage=1">首页</a></li>
+            <li>
+                <a th:href="'/admin/books?currentPage='+${list.currentPage} + ' -'">上一页</a>
+            </li>
+            <li>
+                <a th:href="'/admin/books?currentPage='+${list.currentPage}+ ' '+${list.pageCount} + ' a' ">下一页</a>
+            </li>
+            <li>
+                <a th:href="'/admin/books?currentPage='+${list.pageCount}">末页</a>
+            </li>
+            <span style="font-size: 25px;margin-left: 5px" th:text="'共'+${list.count}+'条,'"></span>
+            <span style="font-size: 25px;margin-left: 5px" th:text="'共'+${list.pageCount}+'页/'"></span>
+            <span style="font-size: 25px;margin-left: 5px" th:text="'当前为第'+${list.currentPage}+'页'"></span>
+        </ul>
+    </nav>
+</div>
+<script src="/static/lib/js/check.js"></script>
+</body>
+</html>
+
+<script>
+    function deleteBook(obj) {
+        var $td = $(obj).parents('tr').children('td')
+        var bookId = $td.eq(0).text();
+        console.log(bookId);
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: 'http://localhost:8080/admin/delete',
+            contentType: "application/json",
+            data: JSON.stringify({
+                "bookId": bookId,
+            }),
+            success: function (result) {
+                console.log(result)
+                if (result.code === "000000" && result.data.success === true) {
+                    window.location.href = "http://localhost:8080/admin/books";
+                    alert("删除成功")
+                } else {
+                    alert(result.msg)
+                }
+            }
+        });
+    }
+
+
+</script>

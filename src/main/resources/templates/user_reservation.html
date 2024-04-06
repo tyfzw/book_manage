@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>预约情况</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/css/homepage.css">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div th:include="../static/common/headbar::headbar"></div>
+<div th:include="./detail_user::homepage"></div>
+<div class="panel panel-default" style="width: 90%;margin-left: 5%">
+    <div class="panel-heading">
+        <h3 class="panel-title" style="text-align:center">预约记录</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-hover" style="text-align:center">
+            <thead>
+            <tr>
+                <th>预约号</th>
+                <th>书名</th>
+                <th>过期时间</th>
+                <th>预约状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="res: ${list}">
+                <td th:text="${res.borrowId}" id="borrowId"></td>
+                <td th:text="${res.name}"></td>
+                <td th:if="${res.orderTime != null}" th:text="${res.orderTime}"></td>
+                <td th:if="${res.orderTime==null}" th:text="待更新"></td>
+                <td th:if="${res.status} eq 'ACCEPT'">
+                    <button type="button" class="btn btn-success disabled">处理中</button>
+                </td>
+                <td th:if="${res.status} eq 'ACCEPT_OUT_TIME'">
+                    <button type="button" class="btn btn-warn " onclick="remove(this)">预约已过期，点击移除</button>
+                </td>
+                <td th:if="${res.status} eq 'DELETE'">
+                    <button type="button" class="btn btn-warn " onclick="remove(this)">此书已下架，点击移除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+<script>
+    function remove(obj) {
+        var $td = $(obj).parents('tr').children('td')
+        var borrowId = $td.eq(0).text();
+        console.log(borrowId);
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: 'http://localhost:8080/managebooks/remove',
+            contentType: "application/json",
+            data: JSON.stringify({
+                "borrowId": borrowId,
+            }),
+            success: function (result) {
+                console.log(result)
+                if (result.code === "000000" && result.data.success === true) {
+                    window.location.href = "http://localhost:8080/managebooks/orderDetail";
+                } else {
+                    alert(result.msg)
+                }
+            }
+        });
+    }
+
+
+</script>
